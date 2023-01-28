@@ -1,0 +1,37 @@
+- arguments: [
+  --color, 
+  --cpp-simple,
+  -XMagicHash,
+  -XImportQualifiedPost,
+  -XUnboxedTuples,
+]
+
+- modules:
+  - {name: GHC.Exts, as: GHC} 
+  - {name: GHC.Magic, message: "Import GHC.Exts qualified as Exts instead", within: []} 
+  - {name: GHC.Prim, message: "Import GHC.Exts qualified as Exts instead", within: []} 
+
+- functions:
+  # Do not allow direct calls to 'error'. All error conditions in the "arrays"
+  # package should be handled by exceptions from the "array-exceptions" package. 
+  - {name: error, within: []}
+
+- group: 
+    name: exception-hints
+    enabled: true
+    imports: 
+    - package base
+
+    rules:
+
+    - warn: {
+        name: Use try,
+        lhs: "catch (Right <$> x) (pure . Left)", 
+        rhs: "try x"
+      }
+    - warn: {
+        name: Use try,
+        lhs: "catch (fmap Right x) (pure . Left)", 
+        rhs: "try x"
+      }
+
